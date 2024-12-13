@@ -1,10 +1,16 @@
-CREATE TABLE proposals (
-    id INT AUTO_INCREMENT PRIMARY KEY, -- Unique ID for each proposal
-    email VARCHAR(255) NOT NULL, -- Email to reference the student
-    proposal_status VARCHAR(50) NOT NULL, -- Status of the proposal (e.g., 'Pending', 'Approved', 'Rejected')
-    proposal_file_path VARCHAR(500) NOT NULL, -- Path to the uploaded proposal file
-    proposal_upload_date DATE NOT NULL, -- Date the proposal was uploaded
-    FOREIGN KEY (email) REFERENCES students(email) -- Foreign key linking to the students table
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+CREATE TABLE proposal (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    proposal_file_path VARCHAR(255) NOT NULL,
+    review_report_path VARCHAR(255), -- New column for storing the review report file path
+    proposal_upload_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- Auto-set the upload date
+    proposal_status ENUM('PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+    reviewer_email VARCHAR(255),
+    review_comments TEXT,
+    review_date DATETIME,
+    CONSTRAINT fk_student_email FOREIGN KEY (email) REFERENCES studentregister(email) ON DELETE CASCADE, -- Foreign key constraint
+    CONSTRAINT fk_reviewer_email FOREIGN KEY (reviewer_email) REFERENCES reviewers(email) ON DELETE SET NULL -- Optional reviewer constraint
 );
+
+-- Add an index for the proposal_status column to improve performance
+CREATE INDEX idx_proposal_status ON proposal (proposal_status);
